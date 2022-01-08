@@ -6,7 +6,7 @@
 /*   By: gclausse <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/08 15:32:53 by gclausse          #+#    #+#             */
-/*   Updated: 2022/01/08 18:00:12 by gclausse         ###   ########.fr       */
+/*   Updated: 2022/01/08 18:01:57 by gclausse         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ int	main(int argc, char **argv, char **env)
 		file = open(argv[1], O_WRONLY, 0777);
 		if (file == -1)
 			exit (errno);
-		cmd1 = dup2(file, 1);
+		cmd1 = dup2(file, STDOUT_FILENO);
 		execve(path, ft_split(argv[2]), env);
 	}
 	if (pid1 > 0) //parent process
@@ -46,7 +46,7 @@ int	main(int argc, char **argv, char **env)
 			file2 = open(1, O_WRONLY, 0777);
 			if (file2 == -1)
 				exit (errno);
-			cmd2 = dup2(file2, 1);
+			cmd2 = dup2(file2, STDOUT_FILENO);
 			execve(path, ft_split(argv[3]), env);
 		}
 		else // still parent
