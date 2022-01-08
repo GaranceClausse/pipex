@@ -6,7 +6,7 @@
 /*   By: gclausse <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/08 15:32:53 by gclausse          #+#    #+#             */
-/*   Updated: 2022/01/08 19:43:04 by gclausse         ###   ########.fr       */
+/*   Updated: 2022/01/08 20:00:47 by gclausse         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ char	*get_path(char **env)
 	i = -1;
 	while (env[++i])
 	{
-		if (ft_strstr(env[i], "PATH") != 0)
+		if (ft_strnstr(env[i], "PATH", 10000) != 0)
 			return (env[i] + 5);
 	}
 	return (NULL);
@@ -32,7 +32,7 @@ char	*parse_path(char *path, char *cmd)
 	int		i;
 
 	i = 0;
-	dir = ft_strsplit(path, ':');
+	dir = ft_split(path, ':');
 	while (dir[i])
 	{
 		if (cmd[0] == '/')
@@ -46,7 +46,7 @@ char	*parse_path(char *path, char *cmd)
 	return (NULL);
 }
 
-void	cmd1(int argc, char **argv, char **env)
+void	cmd1(char **argv, char **env)
 {
 	int		file;
 	char	*path;
@@ -63,7 +63,7 @@ void	cmd1(int argc, char **argv, char **env)
 	execve(path, cmd1, env);
 }
 
-void	cmd2(int argc, char **argv, char **env)
+void	cmd2(char **argv, char **env)
 {
 	int		file2;
 	char	*path2;
@@ -78,7 +78,7 @@ void	cmd2(int argc, char **argv, char **env)
 	close(fd[0]);
 	dup2(file2, STDOUT_FILENO);
 	close(file2);
-	execve(path, cmd2, env);
+	execve(path2, cmd2, env);
 }
 
 int	main(int argc, char **argv, char **env)
@@ -86,25 +86,28 @@ int	main(int argc, char **argv, char **env)
 	pid_t	pid1;
 	pid_t	pid2;
 
-	if (pipe(fd) == -1)
-		return (1);
-	pid1 = fork();
-	if (pid1 < 0)
-		return (2);
-	if (pid1 == 0) //child process
-		cmd1(argc, argv, env);
-	if (pid1 > 0) //parent process
+	if (argc == 5)
 	{
-		close(fd[1]);
-		pid2 = fork();
-		if (pid2 == 0) // new child
-			cmd2(argc, argv, env);
-		else // still parent
+		if (pipe(fd) == -1)
+			return (1);
+		pid1 = fork();
+		if (pid1 < 0)
+			return (2);
+		if (pid1 == 0) //child process
+			cmd1(argv, env);
+		if (pid1 > 0) //parent process
 		{
-			waitpid(pid1, &wstatus, NULL);
-			waitpid(pid2, &wstatus, NULL);
 			close(fd[1]);
-			close(fd[0]);
+			pid2 = fork();
+			if (pid2 == 0) // new child
+				cmd2(argv, env);
+			else // still parent
+			{
+				waitpid(pid1, &wstatus, NULL);
+				waitpid(pid2, &wstatus, NULL);
+				close(fd[1]);
+				close(fd[0]);
+			}
 		}
 	}
 }
