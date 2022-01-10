@@ -6,7 +6,7 @@
 /*   By: gclausse <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/08 15:32:53 by gclausse          #+#    #+#             */
-/*   Updated: 2022/01/10 14:46:18 by gclausse         ###   ########.fr       */
+/*   Updated: 2022/01/10 17:31:31 by gclausse         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,16 +58,18 @@ void	terminate(char *m)
 
 	errsv = errno;
 	if (errno == 0)
-		write(2, "Error\n", 6);
+		write(2, m, ft_strlen(m));
 	else
 		ft_printf("zsh: %s: %s\n", strerror(errsv), m);
+	write (2, "execve failed: No such file or directory", 42);
 	exit(EXIT_FAILURE);
 }
 
 void	cmd_not_found(char **cmd)
 {
+	write(2, "zsh : ", 6);
+	write(2, "command not found : ", 20);
 	write(2, cmd[0], ft_strlen(cmd[0]));
-	write(2, ": command not found\n", 20);
 	freesplit(cmd);
 	exit(EXIT_FAILURE);
 }
@@ -99,9 +101,9 @@ void	cmd1(int *pipefd, int *fd, char **argv, char **env)
 	{
 		cmd1 = ft_split(argv[2], ' ');
 		path = parse_path(get_path(env), cmd1[0]);
-		fd[0] = open(argv[1], O_RDONLY, 0644);
-		if (fd[0] == -1)
-			terminate(argv[1]);	
+		fd[0] = open(argv[1], O_RDONLY);
+		if (fd[0] < 0)
+			terminate(argv[1]);
 		close(pipefd[0]);
 		dup2(fd[0], STDIN_FILENO);
 		dup2(pipefd[1], STDOUT_FILENO);
@@ -129,7 +131,7 @@ void	cmd2(int *pipefd, int *fd, char **argv, char **env)
 		cmd2 = ft_split(argv[3], ' ');
 		path2 = parse_path(get_path(env), cmd2[0]);
 		fd[1] = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
-		if (fd[1] == -1)
+		if (fd[1] < 0)
 			terminate(argv[4]);
 		close(pipefd[1]);
 		dup2(fd[1], STDOUT_FILENO);
@@ -146,9 +148,9 @@ void	cmd2(int *pipefd, int *fd, char **argv, char **env)
 
 int	main(int argc, char **argv, char **env)
 {
-	int	wstatus;
 	int	pipefd[2];
 	int	fd[2];
+	int	wstatus;
 
 	errno = 0;
 	if (argc != 5)
@@ -161,5 +163,8 @@ int	main(int argc, char **argv, char **env)
 	close(pipefd[1]);
 	waitpid(-1, &wstatus, 0);
 	waitpid(-1, &wstatus, 0);
+	if (WEXITSTATUS(wstatus) == EXIT_FAILURE)
+		return (EXIT_FAILURE);
+	else
 	return (0);	
 }
