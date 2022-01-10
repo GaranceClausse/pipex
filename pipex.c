@@ -6,7 +6,7 @@
 /*   By: gclausse <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/08 15:32:53 by gclausse          #+#    #+#             */
-/*   Updated: 2022/01/10 17:31:31 by gclausse         ###   ########.fr       */
+/*   Updated: 2022/01/10 18:15:57 by gclausse         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,17 +61,17 @@ void	terminate(char *m)
 		write(2, m, ft_strlen(m));
 	else
 		ft_printf("zsh: %s: %s\n", strerror(errsv), m);
-	write (2, "execve failed: No such file or directory", 42);
 	exit(EXIT_FAILURE);
 }
 
 void	cmd_not_found(char **cmd)
 {
-	write(2, "zsh : ", 6);
+	write(2, "zsh: ", 6);
 	write(2, "command not found : ", 20);
 	write(2, cmd[0], ft_strlen(cmd[0]));
+	write(2, "\n", 1);
 	freesplit(cmd);
-	exit(EXIT_FAILURE);
+	exit(127);
 }
 
 void	freesplit(char **args)
@@ -107,13 +107,13 @@ void	cmd1(int *pipefd, int *fd, char **argv, char **env)
 		close(pipefd[0]);
 		dup2(fd[0], STDIN_FILENO);
 		dup2(pipefd[1], STDOUT_FILENO);
-		if (cmd1[0] && path)
+		if (!(cmd1[0] && path))
+			cmd_not_found(cmd1);
+		else		
 		{
 			execve(path, cmd1, env);
 			freesplit(cmd1);
 		}
-		else
-			cmd_not_found(cmd1);
 	}
 }
 
@@ -136,13 +136,13 @@ void	cmd2(int *pipefd, int *fd, char **argv, char **env)
 		close(pipefd[1]);
 		dup2(fd[1], STDOUT_FILENO);
 		dup2(pipefd[0], STDIN_FILENO);
-		if (cmd2[0] && path2)
+		if (!(cmd2[0] && path2))
+			cmd_not_found(cmd2);
+		else
 		{
 			execve(path2, cmd2, env);
 			freesplit(cmd2);
 		}
-		else
-			cmd_not_found(cmd2);
 	}
 }
 
@@ -163,8 +163,5 @@ int	main(int argc, char **argv, char **env)
 	close(pipefd[1]);
 	waitpid(-1, &wstatus, 0);
 	waitpid(-1, &wstatus, 0);
-	if (WEXITSTATUS(wstatus) == EXIT_FAILURE)
-		return (EXIT_FAILURE);
-	else
-	return (0);	
+	return (WEXITSTATUS(wstatus));	
 }
