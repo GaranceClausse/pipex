@@ -6,7 +6,7 @@
 /*   By: gclausse <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/08 15:32:53 by gclausse          #+#    #+#             */
-/*   Updated: 2022/01/10 18:15:57 by gclausse         ###   ########.fr       */
+/*   Updated: 2022/01/10 18:50:49 by gclausse         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,8 @@ void	cmd1(int *pipefd, int *fd, char **argv, char **env)
 			cmd_not_found(cmd1);
 		else		
 		{
-			execve(path, cmd1, env);
+			if (execve(path, cmd1, env) == -1)
+				terminate("can't execute the command");
 			freesplit(cmd1);
 		}
 	}
@@ -140,7 +141,8 @@ void	cmd2(int *pipefd, int *fd, char **argv, char **env)
 			cmd_not_found(cmd2);
 		else
 		{
-			execve(path2, cmd2, env);
+			if (execve(path2, cmd2, env) == -1)
+				terminate("can't execute the command");
 			freesplit(cmd2);
 		}
 	}
