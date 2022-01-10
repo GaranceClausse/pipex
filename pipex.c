@@ -6,7 +6,7 @@
 /*   By: gclausse <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/08 15:32:53 by gclausse          #+#    #+#             */
-/*   Updated: 2022/01/10 12:28:36 by gclausse         ###   ########.fr       */
+/*   Updated: 2022/01/10 14:46:18 by gclausse         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,46 @@ char	*parse_path(char *path, char *cmd)
 	return (NULL);
 }
 
+void	usage(void)
+{
+	write(2, "usage: ./pipex [file1] [cmd1] [cmd2] [file2]\n", 45);
+	exit(EXIT_FAILURE);
+}
+
+void	terminate(char *m)
+{
+	int errsv;
+
+	errsv = errno;
+	if (errno == 0)
+		write(2, "Error\n", 6);
+	else
+		ft_printf("zsh: %s: %s\n", strerror(errsv), m);
+	exit(EXIT_FAILURE);
+}
+
+void	cmd_not_found(char **cmd)
+{
+	write(2, cmd[0], ft_strlen(cmd[0]));
+	write(2, ": command not found\n", 20);
+	freesplit(cmd);
+	exit(EXIT_FAILURE);
+}
+
+void	freesplit(char **args)
+{
+	int	size;
+	int	i;
+
+	i = 0;
+	size = 0;
+	while (args[size])
+		size++;
+	while (i < size)
+		free(args[i++]);
+	free(args);
+}
+
 void	cmd1(int *pipefd, int *fd, char **argv, char **env)
 {
 	char	*path;
@@ -54,24 +94,24 @@ void	cmd1(int *pipefd, int *fd, char **argv, char **env)
 
 	pid1 = fork();
 	if (pid1 < 0)
-		exit (errno);
+		terminate("fork");
 	if (pid1 == 0)
 	{
 		cmd1 = ft_split(argv[2], ' ');
 		path = parse_path(get_path(env), cmd1[0]);
 		fd[0] = open(argv[1], O_RDONLY, 0644);
 		if (fd[0] == -1)
-		{
-			if (errno == 0)
-				write(2, "Error\n", 6);
-			else
-				perror(argv[1]);
-			exit(EXIT_FAILURE);
-		}
+			terminate(argv[1]);	
 		close(pipefd[0]);
 		dup2(fd[0], STDIN_FILENO);
 		dup2(pipefd[1], STDOUT_FILENO);
-		execve(path, cmd1, env);
+		if (cmd1[0] && path)
+		{
+			execve(path, cmd1, env);
+			freesplit(cmd1);
+		}
+		else
+			cmd_not_found(cmd1);
 	}
 }
 
@@ -81,27 +121,26 @@ void	cmd2(int *pipefd, int *fd, char **argv, char **env)
 	char	**cmd2;
 	pid_t	pid2;
 
-	errno = 0;
 	pid2 = fork();
 	if (pid2 < 0)
-		exit (errno);
+		terminate("fork");
 	if (pid2 == 0)
 	{
 		cmd2 = ft_split(argv[3], ' ');
 		path2 = parse_path(get_path(env), cmd2[0]);
 		fd[1] = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
 		if (fd[1] == -1)
-		{
-			if (errno == 0)
-				write(2, "Error\n", 6);
-			else
-				perror(argv[4]);
-			exit(EXIT_FAILURE);
-		}
+			terminate(argv[4]);
 		close(pipefd[1]);
 		dup2(fd[1], STDOUT_FILENO);
 		dup2(pipefd[0], STDIN_FILENO);
-		execve(path2, cmd2, env);
+		if (cmd2[0] && path2)
+		{
+			execve(path2, cmd2, env);
+			freesplit(cmd2);
+		}
+		else
+			cmd_not_found(cmd2);
 	}
 }
 
@@ -111,18 +150,16 @@ int	main(int argc, char **argv, char **env)
 	int	pipefd[2];
 	int	fd[2];
 
-	if (argc == 5)
-	{
-		if (pipe(pipefd) == -1)
-			exit (errno);
-		cmd1(pipefd, fd, argv, env);
-		cmd2(pipefd, fd, argv, env);
-		close(pipefd[0]);
-		close(pipefd[1]);
-		waitpid(-1, &wstatus, 0);
-		waitpid(-1, &wstatus, 0);
-	}
-	else
-		write (1, "pbm", 3);
+	errno = 0;
+	if (argc != 5)
+		usage();
+	if (pipe(pipefd) < 0)
+			terminate(NULL);
+	cmd1(pipefd, fd, argv, env);
+	cmd2(pipefd, fd, argv, env);
+	close(pipefd[0]);
+	close(pipefd[1]);
+	waitpid(-1, &wstatus, 0);
+	waitpid(-1, &wstatus, 0);
 	return (0);	
 }
