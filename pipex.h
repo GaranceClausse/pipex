@@ -6,15 +6,21 @@
 /*   By: gclausse <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/08 19:49:43 by gclausse          #+#    #+#             */
-/*   Updated: 2022/01/10 17:55:16 by gclausse         ###   ########.fr       */
+/*   Updated: 2022/01/11 13:07:26 by gclausse         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PIPEX_H
 # define PIPEX_H
 
-#include <libc.h>
 #include <errno.h>
+#include <unistd.h>
+#include <string.h>
+#include <pthread.h>
+#include <fcntl.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <sys/wait.h>
 #include "libft/libft.h"
 
 # define STDIN 0
@@ -29,7 +35,7 @@ char	*parse_path(char *path, char *cmd);
 void	cmd1(int *pipefd, int *fd, char **argv, char **env);
 void	cmd2(int *pipefd, int *fd, char **argv, char **env);
 void	cmd_not_found(char **cmd);
-void	freesplit(char **args);
+void	freetab(char **args);
 void	usage(void);
 void	terminate(char *m);
 

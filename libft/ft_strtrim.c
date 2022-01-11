@@ -17,13 +17,16 @@ static int	find_ocurence(char *str, char c)
 	int	i;
 
 	i = 0;
-	if (str[0] == '\0')
-		return (0);
-	while (str[i])
+	if (c)
 	{
-		if (str[i] == c)
-			return (1);
-		i++;
+		if (str[0] == '\0')
+			return (0);
+		while (str[i])
+		{
+			if (str[i] == c)
+				return (1);
+			i++;
+		}
 	}
 	return (0);
 }
