@@ -6,22 +6,22 @@
 /*   By: gclausse <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/08 19:49:43 by gclausse          #+#    #+#             */
-/*   Updated: 2022/01/11 13:07:26 by gclausse         ###   ########.fr       */
+/*   Updated: 2022/01/11 18:18:04 by gclausse         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PIPEX_H
 # define PIPEX_H
 
-#include <errno.h>
-#include <unistd.h>
-#include <string.h>
-#include <pthread.h>
-#include <fcntl.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <sys/wait.h>
-#include "libft/libft.h"
+# include <errno.h>
+# include <unistd.h>
+# include <string.h>
+# include <pthread.h>
+# include <fcntl.h>
+# include <stdlib.h>
+# include <stdio.h>
+# include <sys/wait.h>
+# include "libft/libft.h"
 
 # define STDIN 0
 # define STDOUT 1
@@ -38,6 +38,6 @@ void	cmd_not_found(char **cmd);
 void	freetab(char **args);
 void	usage(void);
 void	terminate(char *m);
-
+void	freeall(char **cmd, char *path, char *tab);
 
 #endif
