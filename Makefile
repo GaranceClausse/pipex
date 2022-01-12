@@ -6,11 +6,13 @@
 #    By: gclausse <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/12/02 13:46:56 by gclausse          #+#    #+#              #
-#    Updated: 2022/01/08 19:53:24 by gclausse         ###   ########.fr        #
+#    Updated: 2022/01/12 11:35:52 by gclausse         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-SRC= pipex.c 
+SRC= pipex.c \
+     pbm_handle.c \
+     path.c 
 
 LIBFT_PATH= libft
 

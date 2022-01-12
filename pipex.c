@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
+#include "pipex.h"	
 #include "libft/libft.h"
 
 void	cmd1(int *pipefd, int *fd, char **argv, char **env)

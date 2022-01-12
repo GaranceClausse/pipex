@@ -6,22 +6,22 @@
 /*   By: gclausse <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 17:04:22 by gclausse          #+#    #+#             */
-/*   Updated: 2022/01/11 13:28:34 by gclausse         ###   ########.fr       */
+/*   Updated: 2022/01/12 11:44:08 by gclausse         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LIBFT_H
 # define LIBFT_H
 
-#include <errno.h>
-#include <unistd.h>
-#include <string.h>
-#include <pthread.h>
-#include <fcntl.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <sys/wait.h>
-#include <stdarg.h>
+# include <errno.h>
+# include <unistd.h>
+# include <string.h>
+# include <pthread.h>
+# include <fcntl.h>
+# include <stdlib.h>
+# include <stdio.h>
+# include <sys/wait.h>
+# include <stdarg.h>
 
 typedef struct s_list
 {
@@ -72,9 +72,9 @@ void	ft_lstdelone(t_list *lst, void (*del)(void *));
 void	ft_lstclear(t_list **lst, void (*del)(void *));
 void	ft_lstiter(t_list *lst, void (*f)(void *));
 t_list	*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *));
-int	ft_putnbr_base(int nbr, char *base);
-int	putusg(unsigned int nbr, char *base);
-int	putul(unsigned long int nbr, char *base);
-int	ft_printf(const char *str, ...);
+int		ft_putnbr_base(int nbr, char *base);
+int		putusg(unsigned int nbr, char *base);
+int		putul(unsigned long int nbr, char *base);
+int		ft_printf(const char *str, ...);
 
 #endif
