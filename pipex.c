@@ -6,7 +6,7 @@
 /*   By: gclausse <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/08 15:32:53 by gclausse          #+#    #+#             */
-/*   Updated: 2022/01/11 18:27:36 by gclausse         ###   ########.fr       */
+/*   Updated: 2022/01/12 19:44:16 by gclausse         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,8 @@ void	cmd2(int *pipefd, int *fd, char **argv, char **env)
 	pid2 = fork();
 	if (pid2 < 0)
 		terminate("fork");
-	if (pid2 == 0)
+	waitpid(0, NULL, 0);
+	if (pid2 > 0)
 	{
 		cmd2 = ft_split(argv[3], ' ');
 		path2 = parse_path(get_path(env), cmd2[0]);
@@ -64,10 +65,8 @@ void	cmd2(int *pipefd, int *fd, char **argv, char **env)
 		if (!(cmd2[0] && path2))
 			freeall(cmd2, path2, NULL);
 		else
-		{
 			execve(path2, cmd2, env);
-			freeall(cmd2, path2, "can't execute");
-		}
+		freeall(cmd2, path2, "can't execute");
 	}
 }
 
@@ -86,7 +85,6 @@ int	main(int argc, char **argv, char **env)
 	cmd2(pipefd, fd, argv, env);
 	close(pipefd[0]);
 	close(pipefd[1]);
-	waitpid(-1, &wstatus, 0);
 	waitpid(-1, &wstatus, 0);
 	return (WEXITSTATUS(wstatus));
 }

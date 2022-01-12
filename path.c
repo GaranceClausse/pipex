@@ -6,7 +6,7 @@
 /*   By: gclausse <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/11 18:07:12 by gclausse          #+#    #+#             */
-/*   Updated: 2022/01/11 18:35:51 by gclausse         ###   ########.fr       */
+/*   Updated: 2022/01/12 19:45:39 by gclausse         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,9 +44,7 @@ char	*parse_path(char *path, char *cmd)
 		if (!access(curr, F_OK))
 		{
 			while (dir[i++])
-			{
 				free(dir[i]);
-			}
 			free(dir);
 			return (curr);
 		}
