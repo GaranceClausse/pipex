@@ -6,7 +6,7 @@
 /*   By: gclausse <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/08 15:32:53 by gclausse          #+#    #+#             */
-/*   Updated: 2022/01/12 19:44:16 by gclausse         ###   ########.fr       */
+/*   Updated: 2022/01/17 16:29:00 by gclausse         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ int	main(int argc, char **argv, char **env)
 	int	wstatus;
 
 	errno = 0;
-	if (argc != 5)
+	if (argc != 5 || argv[3][0] == '\0' || argv[2][0] == '\0')
 		usage();
 	if (pipe(pipefd) < 0)
 		terminate(NULL);
